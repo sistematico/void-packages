@@ -1,0 +1,20 @@
+# Template file for 'lostfiles'
+pkgname=lostfiles
+version=4.14
+revision=1
+build_style=gnu-makefile
+hostmakedepends="git"
+short_desc="Find orphaned files not owned by any Void packages"
+maintainer="Lucas Saliés Brum <sistematico@gmail.com>"
+license="MIT"
+homepage="https://github.com/sistematico/lostfiles"
+conf_files="/etc/lostfiles.conf"
+
+do_fetch() {
+    git clone ${homepage}.git ${wrksrc}
+}
+
+post_install() {
+    vlicense MIT
+}
+

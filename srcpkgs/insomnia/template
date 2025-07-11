@@ -1,45 +1,47 @@
-# Template file for 'insomnia'
+# arquivo: srcpkgs/insomnia/template
+
 pkgname=insomnia
-version=11.1.0
+version=11.3.0
 revision=1
 archs="x86_64"
 wrksrc="insomnia-core-${version}"
 hostmakedepends="git nodejs-lts curl tar"
-makedepends="python3 libcurl-devel make fontconfig-devel"
+# makedepends="python3 libcurl-devel make fontconfig-devel"
+makedepends="python3 libcurl-devel make fontconfig-devel rpm"
 depends="ffmpeg electron33"
 short_desc="Desktop API client for REST and GraphQL"
-maintainer="Lauren Liberda <lauren@selfisekai.rocks>"
+maintainer="Lauren Liberda <larose@voidlinux.org>"
 license="MIT"
 homepage="https://insomnia.rest"
-distfiles="https://github.com/Kong/insomnia/archive/core%40${version}/Insomnia.Core-${version}.tar.gz"
-checksum=a293107fe6da5fe3f9a2d979eec800029a7040690dbd2781d93d3304b1e8da5b
+distfiles="https://github.com/Kong/insomnia/archive/core@${version}.tar.gz"
+checksum=9916444b2597729252912508e722810c37830c75c966aed4923d5dc0e7e2e8de
 nostrip_files="insomnia"
 
-#pre_build() {
-#	npm run bootstrap
-#	npm run test
-#}
-
-#do_build() {
-#	GIT_TAG="core@${version}" npm run app-package
-#}
+do_build() {
+  export NODE_OPTIONS="--max_old_space_size=8192"
+  npm ci
+  npm test
+  npm run app-package # GIT_TAG="core@${version}" npm run app-package
+}
 
 do_install() {
-	vmkdir usr/lib/insomnia
-	vcopy packages/insomnia/dist/linux-unpacked/* usr/lib/insomnia
+  vmkdir usr/lib/${pkgname}
+  vcopy packages/${pkgname}/dist/linux-unpacked/* usr/lib/insomnia
 
-	vmkdir usr/bin
-	ln -s /usr/lib/insomnia/insomnia ${DESTDIR}/usr/bin/
+  vmkdir usr/bin
+  ln -sf /usr/lib/${pkgname}/${pkgname} ${DESTDIR}/usr/bin/
 
-	vinstall "${FILESDIR}/insomnia.desktop" 644 usr/share/applications
+  vinstall "${FILESDIR}/${pkgname}.desktop" 644 usr/share/applications
 
-	for size in 16 32 48 128; do
-		vinstall packages/insomnia/dist/.icon-set/icon_${size}x${size}.png 644 usr/share/icons/hicolor/${size}x${size}/apps/ insomnia.png
-	done
+  for size in 16 48; do
+    vinstall packages/${pkgname}/dist/.icon-set/icon_${size}x${size}.png \
+      644 usr/share/icons/hicolor/${size}x${size}/apps/insomnia.png
+  done
 
-	for size in 256 512; do
-		vinstall packages/insomnia/dist/.icon-set/icon_${size}.png 644 usr/share/icons/hicolor/${size}x${size}/apps/ insomnia.png
-	done
+  for size in 32 128 256 512; do
+    vinstall packages/${pkgname}/dist/.icon-set/icon_${size}.png \
+      644 usr/share/icons/hicolor/${size}x${size}/apps/insomnia.png
+  done
 
-	vlicense LICENSE
+  vlicense LICENSE
 }

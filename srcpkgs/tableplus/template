@@ -1,0 +1,45 @@
+# Template: TablePlus (via AppImage)
+# /var/db/xbps/srcpkgs/tableplus/template
+
+pkgname=tableplus
+version=1.2.6
+revision=1
+archs="x86_64"
+wrksrc="${pkgname}-${version}"
+short_desc="Modern, native tool with intuitive GUI for database management"
+maintainer="Lucas Saliés Brum <sistematico@gmail.com>"
+license="Proprietary"
+homepage="https://tableplus.com"
+distfiles="https://tableplus.com/release/linux/x64/TablePlus-x64.AppImage"
+checksum="e0720f916aa921ccb2729aacdc42dc419525826717787c5db09ea04bc6262008"
+repository=nonfree
+restricted=yes
+skip_extraction=yes
+
+do_extract() {
+    # AppImage não precisa ser extraído, apenas copiado
+    cp ${XBPS_SRCDISTDIR}/${pkgname}-${version}/TablePlus-x64.AppImage ${wrksrc}/
+}
+
+do_install() {
+    # Instalar o AppImage
+    vinstall TablePlus-x64.AppImage 755 usr/bin tableplus
+    
+    # Criar arquivo .desktop
+    vmkdir usr/share/applications
+    cat > ${DESTDIR}/usr/share/applications/tableplus.desktop <<EOF
+[Desktop Entry]
+Name=TablePlus
+Comment=Modern, native tool with intuitive GUI for database management
+Exec=/usr/bin/tableplus
+Icon=tableplus
+Type=Application
+Categories=Development;Database;
+StartupNotify=true
+EOF
+
+    # Extrair ícone do AppImage (se disponível)
+    # Isso pode precisar ser ajustado dependendo da estrutura do AppImage
+    vmkdir usr/share/pixmaps
+    # Você precisará extrair o ícone manualmente ou usar um ícone genérico
+}

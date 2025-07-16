@@ -1,0 +1,61 @@
+# Template file for 'postbird'
+pkgname=postbird
+version=0.8.4
+revision=1
+#build_style=gnu-configure
+short_desc="Open source PostgreSQL GUI client for macOS, Linux and Windows"
+maintainer="Lucas Saliés Brum <sistematico@gmail.com>"
+makedepends="python2 yarn rpm"
+depends="electron24"
+license="MIT"
+homepage="https://github.com/Paxa/postbird"
+distfiles="https://github.com/Paxa/postbird/archive/refs/tags/${version}.tar.gz"
+checksum="056647cf15001aa622d10831863e055bdd9c2b500c7f2d5412ade46a1420ab29"
+
+#pkgname=insomnia
+#version=11.3.0
+#revision=1
+#archs="x86_64"
+#wrksrc="insomnia-core-${version}"
+#hostmakedepends="git nodejs-lts curl tar"
+#makedepends="python3 libcurl-devel make fontconfig-devel rpm"
+#depends="ffmpeg electron33"
+#short_desc="Desktop API client for REST and GraphQL"
+#maintainer="Lauren Liberda <larose@voidlinux.org>"
+#license="MIT"
+#homepage="https://insomnia.rest"
+#distfiles="https://github.com/Kong/insomnia/archive/core@${version}.tar.gz"
+#checksum=9916444b2597729252912508e722810c37830c75c966aed4923d5dc0e7e2e8de
+#nostrip_files="insomnia"
+
+do_build() {
+  #export NODE_OPTIONS="--max_old_space_size=8192"
+  yarn
+  yarn dist
+  #npm ci
+  #npm test
+  #npm run app-package # GIT_TAG="core@${version}" npm run app-package
+}
+
+do_install() {
+  echo OK
+#  vmkdir usr/lib/${pkgname}
+#  vcopy packages/${pkgname}/dist/linux-unpacked/* usr/lib/insomnia
+
+#  vmkdir usr/bin
+#  ln -sf /usr/lib/${pkgname}/${pkgname} ${DESTDIR}/usr/bin/
+
+#  vinstall "${FILESDIR}/${pkgname}.desktop" 644 usr/share/applications
+
+#  for size in 16 48; do
+#    vinstall packages/${pkgname}/dist/.icon-set/icon_${size}x${size}.png \
+#      644 usr/share/icons/hicolor/${size}x${size}/apps/insomnia.png
+#  done
+
+#  for size in 32 128 256 512; do
+#    vinstall packages/${pkgname}/dist/.icon-set/icon_${size}.png \
+#      644 usr/share/icons/hicolor/${size}x${size}/apps/insomnia.png
+#  done
+
+#  vlicense LICENSE
+}

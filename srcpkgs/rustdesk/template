@@ -1,0 +1,58 @@
+# Template file for 'rustdesk'
+
+pkgname=rustdesk
+version=1.2.3
+revision=1
+archs="x86_64* aarch64*"
+build_style=cargo
+hostmakedepends="pkg-config cmake scdoc"
+makedepends="fontconfig-devel freetype-devel libX11-devel libXfixes-devel
+ libXrandr-devel libxkbcommon-devel alsa-lib-devel gtk+3-devel atk-devel
+ glib-devel cairo-devel pango-devel gdk-pixbuf-devel openssl-devel
+ libvpx-devel libyuv-devel opus-devel"
+depends="gtk+3 libxkbcommon alsa-lib"
+short_desc="Remote desktop software"
+maintainer="Lucas Saliés Brum <sistematico@gmail.com>"
+license="AGPL-3.0-only"
+homepage="https://rustdesk.com"
+changelog="https://github.com/rustdesk/rustdesk/releases"
+distfiles="https://github.com/rustdesk/rustdesk/archive/refs/tags/${version}.tar.gz"
+checksum=2beb2bae0d0b7b14dddbee8e7a0d5d16b9e7b6b7a8e7f5a5b5c5d5e5f5a5b5c  # Substitua pelo checksum correto
+
+# Variáveis de ambiente para usar dependências do sistema
+export SODIUM_USE_PKG_CONFIG=1
+export LIBRARY_PATH="/usr/lib:$LIBRARY_PATH"
+export RUSTDESK_USE_SYSTEM_DEPS=1
+
+pre_configure() {
+	# Corrigir caminhos para libyuv
+	vsed -i 's/third-party\/libyuv\//third-party\/libyuv\/include\//g' libs/iobase/src/platform/linux.rs
+	vsed -i 's/third-party\/libyuv\//third-party\/libyuv\/include\//g' libs/scrap/src/platform/linux.rs
+}
+
+do_build() {
+	# Gerar manpage
+	scdoc < docs/rustdesk.1.scd > rustdesk.1
+
+	cargo build \
+		--release \
+		--features system-deps \
+		--target ${RUST_TARGET} \
+		--verbose
+}
+
+do_install() {
+	# Binário principal
+	vbin target/${RUST_TARGET}/release/rustdesk
+
+	# Ícones
+	vinstall res/32x32.png 644 usr/share/icons/hicolor/32x32/apps rustdesk.png
+	vinstall res/128x128.png 644 usr/share/icons/hicolor/128x128/apps rustdesk.png
+	vinstall res/128x128@2x.png 644 usr/share/icons/hicolor/256x256/apps rustdesk.png
+
+	# Desktop file
+	vinstall res/rustdesk.desktop 644 usr/share/applications
+
+	# Manpage
+	vinstall rustdesk.1 644 usr/share/man/man1 rustdesk.1
+}

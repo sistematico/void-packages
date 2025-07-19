@@ -1,0 +1,45 @@
+# Template file for 'libyuv'
+pkgname=libyuv
+version=96134e95a7468af63ff2ea74a85b0d6db2d2c25e
+revision=1
+archs="x86_64* aarch64*"
+build_style=gnu-makefile
+make_use_env=yes
+make_build_target="libyuv.a"
+make_install_target=""
+hostmakedepends="pkg-config"
+makedepends="libjpeg-turbo-devel"
+short_desc="Library for YUV scaling and conversion functionality"
+maintainer="Seu Nome <seu@email>"
+license="BSD-3-Clause"
+homepage="https://chromium.googlesource.com/libyuv/libyuv/"
+changelog="https://chromium.googlesource.com/libyuv/libyuv/+log/main"
+distfiles="https://chromium.googlesource.com/libyuv/libyuv/+archive/${version}.tar.gz"
+checksum=8b9ae9b651aa789ee42f5b9986fbefcad980bf613af4cefe639ba21f5a1fd69e
+
+do_configure() {
+	# Cria um Makefile simples para construir o libyuv
+	cat > Makefile <<-EOF
+	.PHONY: all
+	all: libyuv.a
+	
+	libyuv.a:
+		\$(MAKE) -C source CXX="\$(CXX)" CC="\$(CC)" \\
+			CXXFLAGS="\$(CXXFLAGS) -fPIC" CFLAGS="\$(CFLAGS) -fPIC" \\
+			libyuv.a
+	
+	.PHONY: install
+	install:
+		# Não faz nada, instalação manual
+	EOF
+}
+
+do_install() {
+	# Instala a biblioteca estática
+	vinstall source/libyuv.a 644 usr/lib
+
+	# Instala os headers
+	find include -name '*.h' | while read -r header; do
+		vinstall "$header" 644 usr/include
+	done
+}
